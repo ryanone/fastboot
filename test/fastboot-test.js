@@ -3,8 +3,7 @@
 const expect           = require('chai').expect;
 const fs               = require('fs');
 const path             = require('path');
-const request          = require('request-promise');
-const TestHTTPServer   = require('./helpers/test-http-server');
+const fixture          = require('./helpers/fixture-path');
 const alchemistRequire = require('broccoli-module-alchemist/require');
 const FastBoot         = alchemistRequire('index');
 
@@ -188,7 +187,3 @@ describe("FastBoot", function() {
   });
 
 });
-
-function fixture(fixtureName) {
-  return path.join(__dirname, '/fixtures/', fixtureName);
-}
