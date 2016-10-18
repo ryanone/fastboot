@@ -190,16 +190,28 @@ class EmberApp {
    * @param {string} path the URL path to render, like `/photos/1`
    * @param {Object} options
    * @param {string} [options.html] the HTML document to insert the rendered app into
+   * @param {metaData} [options.metaData] Per request specific data used in the app.
+   * @param {Boolean} [options.shouldRender] whether the app should do rendering or not. If set to false, it puts the app in routing-only.
+   * @param {Boolean} [options.disableShoebox] whether we should send the API data in the shoebox. If set to false, it will not send the API data used for rendering the app on server side in the index.html.
+   * @param {Integer} [options.destroyAppInstanceInMs] whether to destroy the instance in the given number of ms. This is a failure mechanism to not wedge the Node process (See: https://github.com/ember-fastboot/fastboot/issues/90)
    * @param {ClientRequest}
+   * @param {ClientResponse}
    * @returns {Promise<Result>} result
    */
   visit(path, options) {
     let req = options.request;
     let res = options.response;
+    let metaData = options.metaData;
     let html = options.html || this.html;
+    let disableShoebox = options.disableShoebox || false;
+    let destroyAppInstanceInMs = options.destroyAppInstanceInMs;
+    let hostWhitelist = this.hostWhitelist;
 
-    let bootOptions = buildBootOptions();
-    let fastbootInfo = new FastBootInfo(req, res, this.hostWhitelist);
+    let shouldRender = (options.shouldRender !== undefined) ? options.shouldRender : true;
+    let bootOptions = buildBootOptions(shouldRender);
+
+    let infoOptions = { hostWhitelist, metaData };
+    let fastbootInfo = new FastBootInfo(req, res, infoOptions);
     let doc = bootOptions.document;
 
     let instance;
@@ -209,6 +221,19 @@ class EmberApp {
       html: html,
       fastbootInfo: fastbootInfo
     });
+
+    let destroyAppInstanceTimer;
+    if (destroyAppInstanceInMs) {
+      // start a timer to destroy the appInstance forcefully in the given ms.
+      // This is a failure mechanism so that node process doesn't get wedged if the `visit` never completes.
+      destroyAppInstanceTimer = setTimeout(function() {
+        if (instance && !result.instanceDestroyed) {
+          result.instanceDestroyed = true;
+          result.error = new Error('App instance was forcefully destroyed in ' + destroyAppInstanceInMs + 'ms');
+          instance.destroy();
+        }
+      }, destroyAppInstanceInMs);
+    }
 
     return this.buildAppInstance()
       .then(appInstance => {
@@ -221,12 +246,22 @@ class EmberApp {
       .then(() => result.instanceBooted = true)
       .then(() => instance.visit(path, bootOptions))
       .then(() => waitForApp(instance))
-      .then(() => createShoebox(doc, fastbootInfo))
+      .then(() => {
+        if (!disableShoebox) {
+          // if shoebox is not disabled, then create the shoebox and send API data
+          createShoebox(doc, fastbootInfo);
+        }
+      })
       .catch(error => result.error = error)
       .then(() => result._finalize())
       .finally(() => {
-        if (instance) {
+        if (instance && !result.instanceDestroyed) {
+          result.instanceDestroyed = true;
           instance.destroy();
+
+          if (destroyAppInstanceTimer) {
+            clearTimeout(destroyAppInstanceTimer);
+          }
         }
       });
   }
@@ -270,14 +305,15 @@ class EmberApp {
  * Builds an object with the options required to boot an ApplicationInstance in
  * FastBoot mode.
  */
-function buildBootOptions() {
+function buildBootOptions(shouldRender) {
   let doc = new SimpleDOM.Document();
   let rootElement = doc.body;
 
   return {
     isBrowser: false,
     document: doc,
-    rootElement: rootElement
+    rootElement: rootElement,
+    shouldRender: shouldRender
   };
 }
 
