@@ -51,6 +51,21 @@ describe("FastBoot", function() {
       });
   });
 
+  it("can render HTML when sandboxGlobals is provided", function() {
+    var fastboot = new FastBoot({
+      distPath: fixture('custom-sandbox'),
+      sandboxGlobals: {
+        foo: 5
+      }
+    });
+
+    return fastboot.visit('/foo')
+      .then(r => r.html())
+      .then(html => {
+        expect(html).to.match(/foo from sandbox: 5/);
+      });
+  });
+
   it("rejects the promise if an error occurs", function() {
     var fastboot = new FastBoot({
       distPath: fixture('rejected-promise')

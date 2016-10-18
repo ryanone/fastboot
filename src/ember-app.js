@@ -43,7 +43,7 @@ class EmberApp {
 
     this.html = fs.readFileSync(config.htmlFile, 'utf8');
 
-    this.sandbox = this.buildSandbox(distPath, options.sandbox);
+    this.sandbox = this.buildSandbox(distPath, options.sandbox, options.sandboxGlobals);
     this.app = this.retrieveSandboxedApp();
   }
 
@@ -54,8 +54,9 @@ class EmberApp {
    *
    * @param {string} distPath path to the built Ember app to load
    * @param {Sandbox} [sandboxClass=VMSandbox] sandbox class to use
+   * @param {Object} [sandboxGlobals={}] any additional variables to expose in the sandbox
    */
-  buildSandbox(distPath, sandboxClass) {
+  buildSandbox(distPath, sandboxClass, sandboxGlobals) {
     let Sandbox = sandboxClass || require('./vm-sandbox');
     let sandboxRequire = this.buildWhitelistedRequire(this.moduleWhitelist, distPath);
     let config = this.appConfig;
@@ -63,14 +64,20 @@ class EmberApp {
       return { default: config };
     }
 
-    return new Sandbox({
-      globals: {
-        najax: najax,
-        FastBoot: {
-          require: sandboxRequire,
-          config: appConfig
-        }
+    // add any additional user provided variables in the sandbox
+    let globals = {
+      najax: najax,
+      FastBoot: {
+        require: sandboxRequire,
+        config: appConfig
       }
+    };
+    for (let key in sandboxGlobals) {
+      globals[key] = sandboxGlobals[key];
+    }
+
+    return new Sandbox({
+      globals: globals
     });
   }
 
