@@ -11,6 +11,7 @@ const HTMLSerializer = new SimpleDOM.HTMLSerializer(SimpleDOM.voidMap);
 class Result {
   constructor(options) {
     this.instanceBooted = false;
+    this.instanceDestroyed = false;
     this._doc = options.doc;
     this._html = options.html;
     this._fastbootInfo = options.fastbootInfo;
@@ -43,6 +44,24 @@ class Result {
     }
 
     return Promise.resolve(insertIntoIndexHTML(this._html, this._head, this._body));
+  }
+
+  /**
+   * Returns the serialized representation of the HEAD.
+   *
+   * @returns {String} serialized version of the DOM HEAD
+  */
+  getHead() {
+    return this._head;
+  }
+
+  /**
+   * Returns the serialized representation of the BODY.
+   *
+   * @returns {String} serialized version of the DOM BODY
+  */
+  getBody() {
+    return this._body;
   }
 
   /**
