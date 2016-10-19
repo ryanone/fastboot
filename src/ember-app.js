@@ -223,7 +223,7 @@ class EmberApp {
     });
 
     let destroyAppInstanceTimer;
-    if (destroyAppInstanceInMs) {
+    if (parseInt(destroyAppInstanceInMs, 10) > 0) {
       // start a timer to destroy the appInstance forcefully in the given ms.
       // This is a failure mechanism so that node process doesn't get wedged if the `visit` never completes.
       destroyAppInstanceTimer = setTimeout(function() {
@@ -312,8 +312,8 @@ function buildBootOptions(shouldRender) {
   return {
     isBrowser: false,
     document: doc,
-    rootElement: rootElement,
-    shouldRender: shouldRender
+    rootElement,
+    shouldRender
   };
 }
 
