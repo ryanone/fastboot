@@ -47,21 +47,15 @@ class Result {
   }
 
   /**
-   * Returns the serialized representation of the HEAD.
+   * Returns the serialized representation of DOM HEAD and DOM BODY
    *
-   * @returns {String} serialized version of the DOM HEAD
-  */
-  getHead() {
-    return this._head;
-  }
-
-  /**
-   * Returns the serialized representation of the BODY.
-   *
-   * @returns {String} serialized version of the DOM BODY
-  */
-  getBody() {
-    return this._body;
+   * @returns {Object} serialized version of DOM
+   */
+  domContents() {
+    return {
+      head: this._head,
+      body: this._body
+    };
   }
 
   /**

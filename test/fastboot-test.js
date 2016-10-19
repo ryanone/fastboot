@@ -71,11 +71,10 @@ describe("FastBoot", function() {
 
     return fastboot.visit('/')
       .then((r) => {
-        let head = r.getHead();
-        let body = r.getBody();
+        let contents = r.domContents();
 
-        expect(head).to.equal('');
-        expect(body).to.match(/Welcome to Ember/);
+        expect(contents.head).to.equal('');
+        expect(contents.body).to.match(/Welcome to Ember/);
       });
   });
 
