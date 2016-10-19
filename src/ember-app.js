@@ -26,6 +26,7 @@ class EmberApp {
    * @param {Object} options
    * @param {string} options.distPath - path to the built Ember application
    * @param {Sandbox} [options.sandbox=VMSandbox] - sandbox to use
+   * @param {Object} [options.addOrOverrideSandboxGlobals] - sandbox variables that can be added or used for overrides.
    */
   constructor(options) {
     let distPath = path.resolve(options.distPath);
@@ -43,7 +44,7 @@ class EmberApp {
 
     this.html = fs.readFileSync(config.htmlFile, 'utf8');
 
-    this.sandbox = this.buildSandbox(distPath, options.sandbox, options.sandboxGlobals);
+    this.sandbox = this.buildSandbox(distPath, options.sandbox, options.addOrOverrideSandboxGlobals);
     this.app = this.retrieveSandboxedApp();
   }
 
@@ -54,9 +55,9 @@ class EmberApp {
    *
    * @param {string} distPath path to the built Ember app to load
    * @param {Sandbox} [sandboxClass=VMSandbox] sandbox class to use
-   * @param {Object} [sandboxGlobals={}] any additional variables to expose in the sandbox
+   * @param {Object} [addOrOverrideSandboxGlobals={}] any additional variables to expose in the sandbox or used for overrides
    */
-  buildSandbox(distPath, sandboxClass, sandboxGlobals) {
+  buildSandbox(distPath, sandboxClass, addOrOverrideSandboxGlobals) {
     let Sandbox = sandboxClass || require('./vm-sandbox');
     let sandboxRequire = this.buildWhitelistedRequire(this.moduleWhitelist, distPath);
     let config = this.appConfig;
@@ -64,17 +65,14 @@ class EmberApp {
       return { default: config };
     }
 
-    // add any additional user provided variables in the sandbox
-    let globals = {
+    // add any additional user provided variables or override the default globals in the sandbox
+    let globals = Object.assign({
       najax: najax,
       FastBoot: {
         require: sandboxRequire,
         config: appConfig
       }
-    };
-    for (let key in sandboxGlobals) {
-      globals[key] = sandboxGlobals[key];
-    }
+    }, addOrOverrideSandboxGlobals);
 
     return new Sandbox({
       globals: globals

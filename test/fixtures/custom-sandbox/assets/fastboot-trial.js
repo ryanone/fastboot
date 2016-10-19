@@ -61,7 +61,7 @@ define('fastboot-trial/initializers/data-adapter', ['exports', 'ember'], functio
   /*
     This initializer is here to keep backwards compatibility with code depending
     on the `data-adapter` initializer (before Ember Data was an addon).
-  
+
     Should be removed for Ember Data 3.x
   */
 
@@ -74,31 +74,31 @@ define('fastboot-trial/initializers/data-adapter', ['exports', 'ember'], functio
 define('fastboot-trial/initializers/ember-data', ['exports', 'ember-data/setup-container', 'ember-data/-private/core'], function (exports, _emberDataSetupContainer, _emberDataPrivateCore) {
 
   /*
-  
+
     This code initializes Ember-Data onto an Ember application.
-  
+
     If an Ember.js developer defines a subclass of DS.Store on their application,
     as `App.StoreService` (or via a module system that resolves to `service:store`)
     this code will automatically instantiate it and make it available on the
     router.
-  
+
     Additionally, after an application's controllers have been injected, they will
     each have the store made available to them.
-  
+
     For example, imagine an Ember.js application with the following classes:
-  
+
     App.StoreService = DS.Store.extend({
       adapter: 'custom'
     });
-  
+
     App.PostsController = Ember.ArrayController.extend({
       // ...
     });
-  
+
     When the application is initialized, `App.ApplicationStore` will automatically be
     instantiated, and the instance of `App.PostsController` will have its `store`
     property set to that instance.
-  
+
     Note that this code will only be run if the `ember-application` package is
     loaded. If Ember Data is being used in an environment other than a
     typical application (e.g., node.js where only `ember-runtime` is available),
@@ -221,7 +221,7 @@ define('fastboot-trial/initializers/injectStore', ['exports', 'ember'], function
   /*
     This initializer is here to keep backwards compatibility with code depending
     on the `injectStore` initializer (before Ember Data was an addon).
-  
+
     Should be removed for Ember Data 3.x
   */
 
@@ -236,7 +236,7 @@ define('fastboot-trial/initializers/store', ['exports', 'ember'], function (expo
   /*
     This initializer is here to keep backwards compatibility with code depending
     on the `store` initializer (before Ember Data was an addon).
-  
+
     Should be removed for Ember Data 3.x
   */
 
@@ -251,7 +251,7 @@ define('fastboot-trial/initializers/transforms', ['exports', 'ember'], function 
   /*
     This initializer is here to keep backwards compatibility with code depending
     on the `transforms` initializer (before Ember Data was an addon).
-  
+
     Should be removed for Ember Data 3.x
   */
 
@@ -340,13 +340,15 @@ define('fastboot-trial/routes/foo', ['exports', 'ember'], function (exports, _em
     model: function model() {
       if (this.get('fastboot.isFastBoot')) {
         return {
-          foo: foo
+          foo: foo,
+          najax: najax
         };
       }
     }
   });
 });
 /* globals foo */
+/* globals najax */
 define('fastboot-trial/services/ajax', ['exports', 'ember-ajax/services/ajax'], function (exports, _emberAjaxServicesAjax) {
   Object.defineProperty(exports, 'default', {
     enumerable: true,
@@ -475,7 +477,7 @@ define("fastboot-trial/templates/foo", ["exports"], function (exports) {
             "column": 0
           },
           "end": {
-            "line": 4,
+            "line": 5,
             "column": 0
           }
         },
@@ -501,6 +503,14 @@ define("fastboot-trial/templates/foo", ["exports"], function (exports) {
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n");
         dom.appendChild(el0, el1);
+        var el1 = dom.createElement("p");
+        var el2 = dom.createTextNode("Value of overriden najax in sandbox: ");
+        dom.appendChild(el1, el2);
+        var el2 = dom.createComment("");
+        dom.appendChild(el1, el2);
+        dom.appendChild(el0, el1);
+        var el1 = dom.createTextNode("\n");
+        dom.appendChild(el0, el1);
         var el1 = dom.createComment("");
         dom.appendChild(el0, el1);
         var el1 = dom.createTextNode("\n");
@@ -508,12 +518,13 @@ define("fastboot-trial/templates/foo", ["exports"], function (exports) {
         return el0;
       },
       buildRenderNodes: function buildRenderNodes(dom, fragment, contextualElement) {
-        var morphs = new Array(2);
+        var morphs = new Array(3);
         morphs[0] = dom.createMorphAt(dom.childAt(fragment, [2]), 1, 1);
-        morphs[1] = dom.createMorphAt(fragment, 4, 4, contextualElement);
+        morphs[1] = dom.createMorphAt(dom.childAt(fragment, [4]), 1, 1);
+        morphs[2] = dom.createMorphAt(fragment, 6, 6, contextualElement);
         return morphs;
       },
-      statements: [["content", "model.foo", ["loc", [null, [2, 30], [2, 43]]], 0, 0, 0, 0], ["content", "outlet", ["loc", [null, [3, 0], [3, 10]]], 0, 0, 0, 0]],
+      statements: [["content", "model.foo", ["loc", [null, [2, 30], [2, 43]]], 0, 0, 0, 0], ["content", "model.najax", ["loc", [null, [3, 40], [3, 55]]], 0, 0, 0, 0], ["content", "outlet", ["loc", [null, [4, 0], [4, 10]]], 0, 0, 0, 0]],
       locals: [],
       templates: []
     };

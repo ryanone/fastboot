@@ -3,7 +3,7 @@
   "fastboot": {
     "moduleWhitelist": [],
     "manifest": {
-      "appFile": "assets/fastboot-test.js",
+      "appFile": "assets/fastboot-trial.js",
       "vendorFile": "assets/vendor.js",
       "htmlFile": "index.html"
     },

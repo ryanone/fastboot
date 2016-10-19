@@ -93,8 +93,9 @@ describe("FastBoot", function() {
   it("can render HTML when sandboxGlobals is provided", function() {
     var fastboot = new FastBoot({
       distPath: fixture('custom-sandbox'),
-      sandboxGlobals: {
-        foo: 5
+      addOrOverrideSandboxGlobals: {
+        foo: 5,
+        najax: 'undefined'
       }
     });
 
@@ -102,6 +103,7 @@ describe("FastBoot", function() {
       .then(r => r.html())
       .then(html => {
         expect(html).to.match(/foo from sandbox: 5/);
+        expect(html).to.match(/najax in sandbox: undefined/);
       });
   });
 
