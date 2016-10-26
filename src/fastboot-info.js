@@ -14,13 +14,14 @@ var FastBootResponse = require('./fastboot-response');
  * @param {Object} [infoOptions.metaData] per request meta data
  */
 function FastBootInfo(request, response, infoOptions) {
+  let { hostWhitelist, metaData } = infoOptions;
   this.deferredPromise = RSVP.resolve();
   if (request) {
-    this.request = new FastBootRequest(request, infoOptions.hostWhitelist);
+    this.request = new FastBootRequest(request, hostWhitelist);
   }
 
   this.response = new FastBootResponse(response || {});
-  this.metaData = infoOptions.metaData;
+  this.metaData = metaData;
 }
 
 FastBootInfo.prototype.deferRendering = function(promise) {

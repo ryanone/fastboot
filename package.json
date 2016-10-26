@@ -1,5 +1,5 @@
 {
-  "name": "fastboot",
+  "name": "fastboot-ryanone",
   "version": "1.0.0-rc.0",
   "description": "Library for rendering Ember apps in node.js",
   "main": "src/index.js",
