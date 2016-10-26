@@ -50,7 +50,6 @@ describe("FastBoot", function() {
       });
   });
 
-<<<<<<< HEAD
   it("cannot not render app HTML with shouldRender set as false", function() {
     var fastboot = new FastBoot({
       distPath: fixture('basic-app')
@@ -89,6 +88,8 @@ describe("FastBoot", function() {
     })
       .catch((e) => {
         expect(e.message).to.equal('App instance was forcefully destroyed in 5ms');
+      });
+  });
 
   it("can render HTML when sandboxGlobals is provided", function() {
     var fastboot = new FastBoot({
