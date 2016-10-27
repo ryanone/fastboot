@@ -302,9 +302,6 @@ class EmberApp {
       .then(appInstance => {
         instance = appInstance;
       })
-      .then(() => result.instanceBooted = true)
-      .then(() => instance.visit(path, bootOptions))
-      .then(() => waitForApp(instance))
       .then(() => {
         if (!disableShoebox) {
           // if shoebox is not disabled, then create the shoebox and send API data
