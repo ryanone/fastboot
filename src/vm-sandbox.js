@@ -3,7 +3,7 @@ var Sandbox = require('./sandbox');
 
 function VMSandbox(options) {
   this.init(options);
-  vm.createContext(this.sandbox);
+  this.sandbox = vm.createContext(this.sandbox);
 }
 
 VMSandbox.prototype = Object.create(Sandbox.prototype);
